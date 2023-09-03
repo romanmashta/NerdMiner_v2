@@ -382,8 +382,9 @@ void runMiner(void * task_id) {
   }
 }
 
-#define DELAY 100
-#define REDRAW_EVERY 10
+#define FRAMES_PER_SECOND 14
+#define DELAY 1000/FRAMES_PER_SECOND
+#define REDRAW_EVERY FRAMES_PER_SECOND
 
 void restoreStat() {
   if(!saveStatsToNVS) return;
@@ -431,6 +432,8 @@ void runMonitor(void *name)
 
   totalKHashes = (Mhashes * 1000) + hashes / 1000;;
 
+  bool repainted = false;
+
   while (1)
   {
     if ((frame % REDRAW_EVERY) == 0)
@@ -464,11 +467,22 @@ void runMonitor(void *name)
         if(currentIntervalIndex < saveIntervalsSize - 1)
           currentIntervalIndex++;
       }    
+
+      repainted = true;
     }
-    animateCurrentScreen(frame);
+    
     doLedStuff(frame);
+    
+    if(repainted == false) {
+      vTaskDelay(DELAY / portTICK_PERIOD_MS);
+    }
+
 
     vTaskDelay(DELAY / portTICK_PERIOD_MS);
+
+    animateCurrentScreen(repainted ? 1 : 0);    
+    
     frame++;
+    repainted = false;
   }
 }

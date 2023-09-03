@@ -12,6 +12,10 @@ DisplayDriver *currentDisplayDriver = &tDisplayDriver;
 DisplayDriver *currentDisplayDriver = &amoledDisplayDriver;
 #endif
 
+#ifdef NYAN_AMOLED_DISPLAY
+DisplayDriver *currentDisplayDriver = &nyanAmoledDisplayDriver;
+#endif
+
 #ifdef DONGLE_DISPLAY
 DisplayDriver *currentDisplayDriver = &dongleDisplayDriver;
 #endif

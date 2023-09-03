@@ -64,6 +64,9 @@ typedef struct {
   String templates;
   String bestDiff;
   String timeMining;
+  String hr;
+  String min;
+  String sec;
   String valids;
   String temp;
   String currentTime;
@@ -71,11 +74,17 @@ typedef struct {
 
 typedef struct {
   String completedShares;
+  String totalMHashes;
   String totalKHashes;
   String currentHashRate;
   String btcPrice;
   String blockHeight;
   String currentTime;  
+  String timeMining;
+  String hr;
+  String min;
+  String sec;  
+  String temp;
 }clock_data;
 
 typedef struct {

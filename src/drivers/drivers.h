@@ -17,7 +17,8 @@
 #include "devices/lilygoT_QT.h"
 #elif defined(NERDMINER_T_DISPLAY_V1)
 #include "devices/lilygoV1TDisplay.h"
-
+#elif defined(NYANMINER_S3_AMOLED)
+#include "devices/nyanMinerS3Amoled.h"
 #else
 #error "No device defined"
 #endif
@@ -54,6 +55,7 @@ extern DisplayDriver dongleDisplayDriver;
 extern DisplayDriver esp32_2432S028RDriver;
 extern DisplayDriver t_qtDisplayDriver;
 extern DisplayDriver tDisplayV1Driver;
+extern DisplayDriver nyanAmoledDisplayDriver;
 
 #define SCREENS_ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 
