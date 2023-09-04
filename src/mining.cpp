@@ -374,9 +374,34 @@ void runMiner(void * task_id) {
   }
 }
 
-#define FRAMES_PER_SECOND 14
-#define DELAY 1000/FRAMES_PER_SECOND
-#define REDRAW_EVERY FRAMES_PER_SECOND
+void restoreStat() {
+  esp_err_t ret = nvs_flash_init();
+  if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+    Serial.printf("[MONITOR] NVS partition is full or has invalid version, erasing...\n");
+    nvs_flash_init();
+  }
+
+  ret = nvs_open("state", NVS_READWRITE, &stat_handle);
+
+  size_t required_size = sizeof(double);
+  nvs_get_blob(stat_handle, "best_diff", &best_diff, &required_size);
+  nvs_get_u32(stat_handle, "Mhashes", &Mhashes);
+  nvs_get_u32(stat_handle, "shares", &shares);
+  nvs_get_u32(stat_handle, "valids", &valids);
+  nvs_get_u32(stat_handle, "templates", &templates);
+  nvs_get_u64(stat_handle, "upTime", &upTime);
+  
+}
+
+void saveStat() {
+  Serial.printf("[MONITOR] Saving stats\n");
+  nvs_set_blob(stat_handle, "best_diff", &best_diff, sizeof(double));
+  nvs_set_u32(stat_handle, "Mhashes", Mhashes);
+  nvs_set_u32(stat_handle, "shares", shares);
+  nvs_set_u32(stat_handle, "valids", valids);
+  nvs_set_u32(stat_handle, "templates", templates);
+  nvs_set_u64(stat_handle, "upTime", upTime + (esp_timer_get_time()/1000000));
+}
 
 void restoreStat() {
   if(!saveStatsToNVS) return;
@@ -426,6 +451,8 @@ void runMonitor(void *name)
 
   bool repainted = false;
 
+  uint32_t seconds_elapsed = 0;
+
   while (1)
   {
     if ((frame % REDRAW_EVERY) == 0)
@@ -461,6 +488,11 @@ void runMonitor(void *name)
       }    
 
       repainted = true;
+      seconds_elapsed++;
+
+      if(seconds_elapsed % (SAVESTAT_TIME) == 0){
+        saveStat();
+      }    
     }
     
     doLedStuff(frame);

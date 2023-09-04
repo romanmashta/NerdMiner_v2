@@ -218,6 +218,7 @@ mining_data getMiningData(unsigned long mElapsed)
 
   char timeMining[15] = {0};
   uint64_t secElapsed = upTime + (esp_timer_get_time() / 1000000);
+
   int days = secElapsed / 86400;
   int hours = (secElapsed - (days * 86400)) / 3600;               // Number of seconds in an hour
   int mins = (secElapsed - (days * 86400) - (hours * 3600)) / 60; // Remove the number of hours and calculate the minutes.
@@ -246,12 +247,11 @@ clock_data getClockData(unsigned long mElapsed)
   clock_data data;
 
   char timeMining[15] = {0};
-  unsigned long secElapsed = millis() / 1000;
-  int days = secElapsed / 86400;
-  int hours = (secElapsed - (days * 86400)) / 3600;               // Number of seconds in an hour
-  int mins = (secElapsed - (days * 86400) - (hours * 3600)) / 60; // Remove the number of hours and calculate the minutes.
-  int secs = secElapsed - (days * 86400) - (hours * 3600) - (mins * 60);
-  sprintf(timeMining, "%01d  %02d:%02d:%02d", days, hours, mins, secs);
+  uint64_t secElapsed = upTime + (esp_timer_get_time() / 1000000);
+  int hours = secElapsed / 3600;
+  int mins = (secElapsed - (hours * 3600)) / 60;
+  int secs = secElapsed - (hours * 3600) - (mins * 60);
+  sprintf(timeMining, "%02d:%02d:%02d", hours, mins, secs);
 
   data.completedShares = shares;
   data.totalMHashes = Mhashes;
