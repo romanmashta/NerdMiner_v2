@@ -251,14 +251,14 @@ clock_data getClockData(unsigned long mElapsed)
   int hours = secElapsed / 3600;
   int mins = (secElapsed - (hours * 3600)) / 60;
   int secs = secElapsed - (hours * 3600) - (mins * 60);
-  sprintf(timeMining, "%02d:%02d:%02d", hours, mins, secs);
+  // sprintf(timeMining, "%02d:%02d:%02d", hours, mins, secs);
 
   data.completedShares = shares;
   data.totalMHashes = Mhashes;
   data.totalKHashes = totalKHashes;
   data.currentHashRate = getCurrentHashRate(mElapsed);
-  data.btcPrice = getBTCprice();
-  data.blockHeight = getBlockHeight();
+  // data.btcPrice = getBTCprice();
+  // data.blockHeight = getBlockHeight();
   data.currentTime = getTime();
   data.timeMining = timeMining;
   data.hr = hours;

@@ -452,11 +452,15 @@ void runMonitor(void *name)
   bool repainted = false;
 
   uint32_t seconds_elapsed = 0;
+  uint32_t currentScreen = currentDisplayDriver->current_cyclic_screen;
+
+  totalKHashes = (Mhashes * 1000) + hashes / 1000;;
 
   while (1)
   {
-    if ((frame % REDRAW_EVERY) == 0)
+    if ((frame % REDRAW_EVERY) == 0 || currentScreen != currentDisplayDriver->current_cyclic_screen)
     {
+      currentScreen = currentDisplayDriver->current_cyclic_screen;
       unsigned long mElapsed = millis() - mLastCheck;
       mLastCheck = millis();
       unsigned long currentKHashes = (Mhashes * 1000) + hashes / 1000;
