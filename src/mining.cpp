@@ -266,10 +266,6 @@ void runMiner(void * task_id) {
     //nerd_mids(&nerdMidstate, mMiner.bytearray_blockheader); //NerdShaplus
 
 
-    // search a valid nonce
-    unsigned long nonce = TARGET_NONCE - MAX_NONCE;
-    // split up odd/even nonces between miner tasks
-    nonce += miner_id;
     uint32_t startT = micros();
     unsigned char *header64;
     // each miner thread needs to track its own blockheader template
@@ -284,6 +280,7 @@ void runMiner(void * task_id) {
     bool is16BitShare=true;  
     Serial.println(">>> STARTING TO HASH NONCES");
     while(true) {
+      const unsigned long nonce = esp_random();
       if (miner_id == 0)
         memcpy(mMiner.bytearray_blockheader + 76, &nonce, 4);
       else
@@ -303,14 +300,12 @@ void runMiner(void * task_id) {
         Serial.println("");  */
 
       hashes++;
-      if (nonce > TARGET_NONCE) break; //exit
       if(!mMiner.inRun) { Serial.println ("MINER WORK ABORTED >> waiting new job"); break;}
 
       // check if 16bit share
       if(hash[31] !=0 || hash[30] !=0) {
       //if(!is16BitShare){
         // increment nonce
-        nonce += 2;
         continue;
       }
 
@@ -348,7 +343,6 @@ void runMiner(void * task_id) {
       // check if 32bit share
       if(hash[29] !=0 || hash[28] !=0) {
         // increment nonce
-        nonce += 2;
         continue;
       }
       shares++;
@@ -361,9 +355,7 @@ void runMiner(void * task_id) {
         // wait for new job
         break;
       }
-      // increment nonce
-      nonce += 2;
-    } // exit if found a valid result or nonce > MAX_NONCE
+    }
 
     //wc_Sha256Free(&sha256);
     //wc_Sha256Free(midstate);
