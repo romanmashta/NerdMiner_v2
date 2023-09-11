@@ -43,7 +43,7 @@ monitor_data mMonitor;
 bool isMinerSuscribed = false;
 unsigned long mLastTXtoPool = millis();
 
-int saveIntervals[7] = {5 * 60, 15 * 60, 30 * 60, 1 * 360, 3 * 360, 6 * 360, 12 * 360};
+int saveIntervals[7] = {5 * 60, 15 * 60, 30 * 60};
 int saveIntervalsSize = sizeof(saveIntervals)/sizeof(saveIntervals[0]);
 int currentIntervalIndex = 0;
 
@@ -375,35 +375,6 @@ void runMiner(void * task_id) {
 }
 
 void restoreStat() {
-  esp_err_t ret = nvs_flash_init();
-  if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-    Serial.printf("[MONITOR] NVS partition is full or has invalid version, erasing...\n");
-    nvs_flash_init();
-  }
-
-  ret = nvs_open("state", NVS_READWRITE, &stat_handle);
-
-  size_t required_size = sizeof(double);
-  nvs_get_blob(stat_handle, "best_diff", &best_diff, &required_size);
-  nvs_get_u32(stat_handle, "Mhashes", &Mhashes);
-  nvs_get_u32(stat_handle, "shares", &shares);
-  nvs_get_u32(stat_handle, "valids", &valids);
-  nvs_get_u32(stat_handle, "templates", &templates);
-  nvs_get_u64(stat_handle, "upTime", &upTime);
-  
-}
-
-void saveStat() {
-  Serial.printf("[MONITOR] Saving stats\n");
-  nvs_set_blob(stat_handle, "best_diff", &best_diff, sizeof(double));
-  nvs_set_u32(stat_handle, "Mhashes", Mhashes);
-  nvs_set_u32(stat_handle, "shares", shares);
-  nvs_set_u32(stat_handle, "valids", valids);
-  nvs_set_u32(stat_handle, "templates", templates);
-  nvs_set_u64(stat_handle, "upTime", upTime + (esp_timer_get_time()/1000000));
-}
-
-void restoreStat() {
   if(!saveStatsToNVS) return;
   esp_err_t ret = nvs_flash_init();
   if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -444,8 +415,6 @@ void runMonitor(void *name)
   resetToFirstScreen();
 
   unsigned long frame = 0;
-
-  uint32_t seconds_elapsed = 0;
 
   totalKHashes = (Mhashes * 1000) + hashes / 1000;;
 
@@ -493,10 +462,6 @@ void runMonitor(void *name)
 
       repainted = true;
       seconds_elapsed++;
-
-      if(seconds_elapsed % (SAVESTAT_TIME) == 0){
-        saveStat();
-      }    
     }
     
     doLedStuff(frame);
@@ -504,9 +469,6 @@ void runMonitor(void *name)
     if(repainted == false) {
       vTaskDelay(DELAY / portTICK_PERIOD_MS);
     }
-
-
-    vTaskDelay(DELAY / portTICK_PERIOD_MS);
 
     animateCurrentScreen(repainted ? 1 : 0);    
     
