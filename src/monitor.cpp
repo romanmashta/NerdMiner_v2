@@ -211,29 +211,33 @@ String getCurrentHashRate(unsigned long mElapsed)
 
 mining_data getMiningData(unsigned long mElapsed)
 {
-  mining_data data;
+  mining_data data;  
+  try{
+    char best_diff_string[16] = {0};
+    suffix_string(best_diff, best_diff_string, 16, 0);
 
-  char best_diff_string[16] = {0};
-  suffix_string(best_diff, best_diff_string, 16, 0);
+    char timeMining[15] = {0};
+    uint64_t secElapsed = upTime + (esp_timer_get_time() / 1000000);
 
-  char timeMining[15] = {0};
-  uint64_t secElapsed = upTime + (esp_timer_get_time() / 1000000);
-  int days = secElapsed / 86400;
-  int hours = (secElapsed - (days * 86400)) / 3600;               // Number of seconds in an hour
-  int mins = (secElapsed - (days * 86400) - (hours * 3600)) / 60; // Remove the number of hours and calculate the minutes.
-  int secs = secElapsed - (days * 86400) - (hours * 3600) - (mins * 60);
-  sprintf(timeMining, "%01d  %02d:%02d:%02d", days, hours, mins, secs);
-
-  data.completedShares = shares;
-  data.totalMHashes = Mhashes;
-  data.totalKHashes = totalKHashes;
-  data.currentHashRate = getCurrentHashRate(mElapsed);
-  data.templates = templates;
-  data.bestDiff = best_diff_string;
-  data.timeMining = timeMining;
-  data.valids = valids;
-  data.temp = String(temperatureRead(), 0);
-  data.currentTime = getTime();
+    int hours = secElapsed/3600;                                                        //Number of seconds in an hour
+    int mins = (secElapsed-(hours*3600))/60;                                            //Remove the number of hours and calculate the minutes.
+    int secs = secElapsed-(hours*3600)-(mins*60);   
+    
+    data.completedShares = shares;
+    data.totalMHashes = Mhashes;
+    data.totalKHashes = totalKHashes;
+    data.currentHashRate = getCurrentHashRate(mElapsed);
+    data.templates = templates;
+    data.bestDiff = best_diff_string;
+    data.hr = hours;
+    data.min = mins;
+    data.sec = secs;
+    data.valids = valids;
+    data.temp = String(temperatureRead(), 0);
+    data.currentTime = getTime();
+  } catch (const std::exception& e) {
+    Serial.println(String("getMiningData error: ") + e.what());
+  }
 
   return data;
 }
@@ -242,12 +246,29 @@ clock_data getClockData(unsigned long mElapsed)
 {
   clock_data data;
 
-  data.completedShares = shares;
-  data.totalKHashes = totalKHashes;
-  data.currentHashRate = getCurrentHashRate(mElapsed);
-  data.btcPrice = getBTCprice();
-  data.blockHeight = getBlockHeight();
-  data.currentTime = getTime();
+  try{
+    char timeMining[15] = {0};
+    uint64_t secElapsed = upTime + (esp_timer_get_time() / 1000000);
+    int hours = secElapsed / 3600;
+    int mins = (secElapsed - (hours * 3600)) / 60;
+    int secs = secElapsed - (hours * 3600) - (mins * 60);
+    // sprintf(timeMining, "%02d:%02d:%02d", hours, mins, secs);
+
+    data.completedShares = shares;
+    data.totalMHashes = Mhashes;
+    data.totalKHashes = totalKHashes;
+    data.currentHashRate = getCurrentHashRate(mElapsed);
+    // data.btcPrice = getBTCprice();
+    // data.blockHeight = getBlockHeight();
+    data.currentTime = getTime();
+    data.timeMining = timeMining;
+    data.hr = hours;
+    data.min = mins;
+    data.sec = secs;
+    data.temp = String(temperatureRead(), 0);
+  } catch (const std::exception& e) {
+    Serial.println(String("getClockData error: ") + e.what());
+  }
 
   return data;
 }
@@ -255,10 +276,13 @@ clock_data getClockData(unsigned long mElapsed)
 clock_data_t getClockData_t(unsigned long mElapsed)
 {
   clock_data_t data;
-
-  data.valids = valids;
-  data.currentHashRate = getCurrentHashRate(mElapsed);
-  getTime(&data.currentHours, &data.currentMinutes, &data.currentSeconds);
+  try{
+    data.valids = valids;
+    data.currentHashRate = getCurrentHashRate(mElapsed);
+    getTime(&data.currentHours, &data.currentMinutes, &data.currentSeconds);
+  } catch (const std::exception& e) {
+    Serial.println(String("getClockData_t error: ") + e.what());
+  }
 
   return data;
 }
@@ -267,22 +291,26 @@ coin_data getCoinData(unsigned long mElapsed)
 {
   coin_data data;
 
-  updateGlobalData(); // Update gData vars asking mempool APIs
+  try{
+    updateGlobalData(); // Update gData vars asking mempool APIs
 
-  data.completedShares = shares;
-  data.totalKHashes = totalKHashes;
-  data.currentHashRate = getCurrentHashRate(mElapsed);
-  data.btcPrice = getBTCprice();
-  data.currentTime = getTime();
-  data.halfHourFee = String(gData.halfHourFee) + " sat/vB";
-  data.netwrokDifficulty = gData.difficulty;
-  data.globalHashRate = gData.globalHash;
-  data.blockHeight = getBlockHeight();
+    data.completedShares = shares;
+    data.totalKHashes = totalKHashes;
+    data.currentHashRate = getCurrentHashRate(mElapsed);
+    data.btcPrice = getBTCprice();
+    data.currentTime = getTime();
+    data.halfHourFee = String(gData.halfHourFee) + " sat/vB";
+    data.netwrokDifficulty = gData.difficulty;
+    data.globalHashRate = gData.globalHash;
+    data.blockHeight = getBlockHeight();
 
-  unsigned long currentBlock = data.blockHeight.toInt();
-  unsigned long remainingBlocks = (((currentBlock / HALVING_BLOCKS) + 1) * HALVING_BLOCKS) - currentBlock;
-  data.progressPercent = (HALVING_BLOCKS - remainingBlocks) * 100 / HALVING_BLOCKS;
-  data.remainingBlocks = String(remainingBlocks) + " BLOCKS";
+    unsigned long currentBlock = data.blockHeight.toInt();
+    unsigned long remainingBlocks = (((currentBlock / HALVING_BLOCKS) + 1) * HALVING_BLOCKS) - currentBlock;
+    data.progressPercent = (HALVING_BLOCKS - remainingBlocks) * 100 / HALVING_BLOCKS;
+    data.remainingBlocks = String(remainingBlocks) + " BLOCKS";
+  } catch (const std::exception& e) {
+    Serial.println(String("getCoinData error: ") + e.what());
+  }  
 
   return data;
 }

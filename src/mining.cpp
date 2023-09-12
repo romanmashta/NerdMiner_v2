@@ -43,7 +43,7 @@ monitor_data mMonitor;
 bool isMinerSuscribed = false;
 unsigned long mLastTXtoPool = millis();
 
-int saveIntervals[7] = {5 * 60, 15 * 60, 30 * 60, 1 * 360, 3 * 360, 6 * 360, 12 * 360};
+int saveIntervals[7] = {5 * 60, 15 * 60, 30 * 60};
 int saveIntervalsSize = sizeof(saveIntervals)/sizeof(saveIntervals[0]);
 int currentIntervalIndex = 0;
 
@@ -266,10 +266,6 @@ void runMiner(void * task_id) {
     //nerd_mids(&nerdMidstate, mMiner.bytearray_blockheader); //NerdShaplus
 
 
-    // search a valid nonce
-    unsigned long nonce = TARGET_NONCE - MAX_NONCE;
-    // split up odd/even nonces between miner tasks
-    nonce += miner_id;
     uint32_t startT = micros();
     unsigned char *header64;
     // each miner thread needs to track its own blockheader template
@@ -284,6 +280,7 @@ void runMiner(void * task_id) {
     bool is16BitShare=true;  
     Serial.println(">>> STARTING TO HASH NONCES");
     while(true) {
+      const unsigned long nonce = esp_random();
       if (miner_id == 0)
         memcpy(mMiner.bytearray_blockheader + 76, &nonce, 4);
       else
@@ -303,14 +300,12 @@ void runMiner(void * task_id) {
         Serial.println("");  */
 
       hashes++;
-      if (nonce > TARGET_NONCE) break; //exit
       if(!mMiner.inRun) { Serial.println ("MINER WORK ABORTED >> waiting new job"); break;}
 
       // check if 16bit share
       if(hash[31] !=0 || hash[30] !=0) {
       //if(!is16BitShare){
         // increment nonce
-        nonce += 2;
         continue;
       }
 
@@ -348,7 +343,6 @@ void runMiner(void * task_id) {
       // check if 32bit share
       if(hash[29] !=0 || hash[28] !=0) {
         // increment nonce
-        nonce += 2;
         continue;
       }
       shares++;
@@ -361,9 +355,7 @@ void runMiner(void * task_id) {
         // wait for new job
         break;
       }
-      // increment nonce
-      nonce += 2;
-    } // exit if found a valid result or nonce > MAX_NONCE
+    }
 
     //wc_Sha256Free(&sha256);
     //wc_Sha256Free(midstate);
@@ -381,9 +373,6 @@ void runMiner(void * task_id) {
       Serial.print(">>> Resetting watchdog timer");
   }
 }
-
-#define DELAY 100
-#define REDRAW_EVERY 10
 
 void restoreStat() {
   if(!saveStatsToNVS) return;
@@ -427,14 +416,20 @@ void runMonitor(void *name)
 
   unsigned long frame = 0;
 
+  totalKHashes = (Mhashes * 1000) + hashes / 1000;;
+
+  bool repainted = false;
+
   uint32_t seconds_elapsed = 0;
+  uint32_t currentScreen = currentDisplayDriver->current_cyclic_screen;
 
   totalKHashes = (Mhashes * 1000) + hashes / 1000;;
 
   while (1)
   {
-    if ((frame % REDRAW_EVERY) == 0)
+    if ((frame % REDRAW_EVERY) == 0 || currentScreen != currentDisplayDriver->current_cyclic_screen)
     {
+      currentScreen = currentDisplayDriver->current_cyclic_screen;
       unsigned long mElapsed = millis() - mLastCheck;
       mLastCheck = millis();
       unsigned long currentKHashes = (Mhashes * 1000) + hashes / 1000;
@@ -464,11 +459,20 @@ void runMonitor(void *name)
         if(currentIntervalIndex < saveIntervalsSize - 1)
           currentIntervalIndex++;
       }    
-    }
-    animateCurrentScreen(frame);
-    doLedStuff(frame);
 
-    vTaskDelay(DELAY / portTICK_PERIOD_MS);
+      repainted = true;
+      seconds_elapsed++;
+    }
+    
+    doLedStuff(frame);
+    
+    if(repainted == false) {
+      vTaskDelay(DELAY / portTICK_PERIOD_MS);
+    }
+
+    animateCurrentScreen(repainted ? 1 : 0);    
+    
     frame++;
+    repainted = false;
   }
 }

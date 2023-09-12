@@ -236,7 +236,7 @@ void init_WifiManager()
     //No configuramos timeout al modulo
     wm.setConfigPortalBlocking(true); //Hacemos que el portal SI bloquee el firmware
     drawSetupScreen();
-    if (!wm.startConfigPortal("NerdMinerAP","MineYourCoins"))
+    if (!wm.startConfigPortal("NyanMiner","NyanYourCoins"))
     {
       Serial.println("failed to connect and hit timeout");
       //Could be break forced after edditing, so save new config
@@ -257,7 +257,7 @@ void init_WifiManager()
     //Tratamos de conectar con la configuración inicial ya almacenada
     mMonitor.NerdStatus = NM_Connecting;
     wm.setCaptivePortalEnable(false); // disable captive portal redirection
-    if (!wm.autoConnect("NerdMinerAP","MineYourCoins"))
+    if (!wm.autoConnect("NyanMiner","NyanYourCoins"))
     {
       Serial.println("Failed to connect and hit timeout");
       //delay(3000);

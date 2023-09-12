@@ -12,6 +12,12 @@
 
 #define TARGET_BUFFER_SIZE 64
 
+#define FRAMES_PER_SECOND 14
+#define DELAY 1000/FRAMES_PER_SECOND
+#define REDRAW_EVERY FRAMES_PER_SECOND
+
+#define SAVESTAT_TIME (5 * 60) //Save stats every 5 min seconds
+
 void runMonitor(void *name);
 void runStratumWorker(void *name);
 void runMiner(void *name);
