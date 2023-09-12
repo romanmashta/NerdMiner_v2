@@ -29,8 +29,8 @@
 
 #define BUFFER_SIZE G_WIDTH
 
-uint16_t usTemp[G_WIDTH];
-uint16_t gifBuf[G_SIZE];
+uint16_t *usTemp;
+uint16_t *gifBuf;
 
 OpenFontRender render;
 TFT_eSPI tft = TFT_eSPI();
@@ -153,6 +153,8 @@ void GIFDraw(GIFDRAW *pDraw)
 
 void amoledDisplay_Init(void)
 {
+  usTemp=(uint16_t*)ps_malloc(G_WIDTH * sizeof(uint16_t));
+  gifBuf=(uint16_t*)ps_malloc(G_SIZE * sizeof(uint16_t));
   rm67162_init();
   lcd_setRotation(3);
 

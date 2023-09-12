@@ -447,6 +447,7 @@ void runMonitor(void *name)
       }
 
       #ifdef DEBUG_MEMORY
+      Serial.printf("### [Total PSRAM / Free PSRAM]: %d / %d \n", ESP.getPsramSize(), ESP.getFreePsram());
       Serial.printf("### [Total Heap / Free heap]: %d / %d \n", ESP.getHeapSize(), ESP.getFreeHeap());
       Serial.printf("### Max stack usage: %d\n", uxTaskGetStackHighWaterMark(NULL));
       #endif
