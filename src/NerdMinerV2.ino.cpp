@@ -7,10 +7,10 @@
 #include <OneButton.h>
 
 #include "mbedtls/md.h"
-#include "wManager.h"
 #include "mining.h"
 #include "monitor.h"
 #include "drivers/display.h"
+#include "wManager.h"
 
 //3 seconds WDT
 #define WDT_TIMEOUT 3

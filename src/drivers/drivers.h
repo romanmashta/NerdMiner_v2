@@ -1,27 +1,7 @@
 #ifndef DRIVERS_H
 #define DRIVERS_H
 
-#if defined(NERDMINERV2)
-#include "devices/nerdMinerV2.h"
-#elif defined(DEVKITV1)
-#include "devices/esp32DevKit.h"
-#elif defined(TDISPLAY)
-#include "devices/lilygoS3TDisplay.h"
-#elif defined(NERMINER_S3_AMOLED)
-#include "devices/lilygoS3Amoled.h"
-#elif defined(NERMINER_S3_DONGLE)
-#include "devices/lilygoS3Dongle.h"
-#elif defined(ESP32_2432S028R)
-#include "devices/esp322432s028r.h"
-#elif defined(NERMINER_T_QT)
-#include "devices/lilygoT_QT.h"
-#elif defined(NERDMINER_T_DISPLAY_V1)
-#include "devices/lilygoV1TDisplay.h"
-#elif defined(NYANMINER_S3_AMOLED)
-#include "devices/nyanMinerS3Amoled.h"
-#else
-#error "No device defined"
-#endif
+#include "devices.h"
 
 typedef void (*AlternateFunction)(void);
 typedef void (*DriverInitFunction)(void);
