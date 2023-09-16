@@ -1,5 +1,4 @@
-#ifndef DRIVERS_H
-#define DRIVERS_H
+#pragma once
 
 #include "devices.h"
 
@@ -38,5 +37,3 @@ extern DisplayDriver tDisplayV1Driver;
 extern DisplayDriver nyanAmoledDisplayDriver;
 
 #define SCREENS_ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
-
-#endif // DRIVERS_H

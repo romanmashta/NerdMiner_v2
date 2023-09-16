@@ -1,5 +1,4 @@
-#ifndef STRATUM_API_H
-#define STRATUM_API_H
+#pragma once
 
 #include "cJSON.h"
 #include <stdint.h>
@@ -65,6 +64,3 @@ bool tx_mining_submit(WiFiClient& client, mining_subscribe mWorker, mining_job m
 //Difficulty Methods 
 bool tx_suggest_difficulty(WiFiClient& client, double difficulty);
 bool parse_mining_set_difficulty(String line, double& difficulty);
-
-
-#endif // STRATUM_API_H

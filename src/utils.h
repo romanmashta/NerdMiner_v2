@@ -1,5 +1,4 @@
-#ifndef UTILS_API_H
-#define UTILS_API_H
+#pragma once
 
 #include <stddef.h>
 #include <stdint.h>
@@ -23,7 +22,3 @@ double diff_from_target(void *target);
 miner_data calculateMiningData(mining_subscribe& mWorker, mining_job mJob);
 bool checkValid(unsigned char* hash, unsigned char* target);
 void suffix_string(double val, char *buf, size_t bufsiz, int sigdigits);
-
-
-
-#endif // UTILS_API_H

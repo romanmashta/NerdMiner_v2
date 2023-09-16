@@ -1,8 +1,5 @@
-#ifndef WMANAGER_H
-#define WMANAGER_H
+#pragma once
 
 void init_WifiManager();
 void wifiManagerProcess();
 void reset_configurations();
-
-#endif // WMANAGER_H

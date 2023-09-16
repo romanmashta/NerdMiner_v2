@@ -1,6 +1,4 @@
-
-#ifndef MINING_API_H
-#define MINING_API_H
+#pragma once
 
 // Mining
 #define MAX_NONCE_STEP  5000000U
@@ -34,6 +32,3 @@ typedef struct{
   bool newJob;
   bool newJob2;
 }miner_data;
-
-
-#endif // UTILS_API_H

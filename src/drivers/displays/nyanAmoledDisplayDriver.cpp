@@ -7,10 +7,10 @@
 #include "media/images_536_240_nyan.h"
 #include "media/myFonts.h"
 #include "media/Free_Fonts.h"
+#include "media/s_nyan.h"
 #include "version.h"
 #include "monitor.h"
 #include "OpenFontRender.h"
-#include "media/s_nyan.h"
 #include <AnimatedGIF.h>
 
 #define WIDTH 536

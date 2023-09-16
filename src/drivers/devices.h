@@ -1,5 +1,4 @@
-#ifndef DEVICES_H
-#define DEVICES_H
+#pragma once
 
 #if defined(NERDMINERV2)
 #include "devices/nerdMinerV2.h"
@@ -8,5 +7,3 @@
 #else
 #error "No device defined"
 #endif
-
-#endif // DEVICES_H

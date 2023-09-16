@@ -1,5 +1,4 @@
-#ifndef DISPLAY_H
-#define DISPLAY_H
+#pragma once
 
 #include "drivers.h"
 
@@ -15,5 +14,3 @@ void drawSetupScreen();
 void drawCurrentScreen(unsigned long mElapsed);
 void animateCurrentScreen(unsigned long frame);
 void doLedStuff(unsigned long frame);
-
-#endif // DISPLAY_H

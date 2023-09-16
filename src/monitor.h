@@ -1,5 +1,4 @@
-#ifndef MONITOR_API_H
-#define MONITOR_API_H
+#pragma once
 
 #include <Arduino.h>
 
@@ -123,6 +122,3 @@ coin_data getCoinData(unsigned long mElapsed);
 pool_data updatePoolData(void);
 
 clock_data_t getClockData_t(unsigned long mElapsed);
-
-
-#endif //MONITOR_API_H
