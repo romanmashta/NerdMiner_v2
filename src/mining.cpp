@@ -43,7 +43,7 @@ monitor_data mMonitor;
 bool isMinerSuscribed = false;
 unsigned long mLastTXtoPool = millis();
 
-int saveIntervals[7] = {5 * 60, 15 * 60, 30 * 60};
+int saveIntervals[3] = {5 * 60, 15 * 60, 30 * 60};
 int saveIntervalsSize = sizeof(saveIntervals)/sizeof(saveIntervals[0]);
 int currentIntervalIndex = 0;
 
@@ -415,6 +415,7 @@ void runMonitor(void *name)
   resetToFirstScreen();
 
   unsigned long frame = 0;
+  currentIntervalIndex = 0;
 
   totalKHashes = (Mhashes * 1000) + hashes / 1000;;
 
@@ -452,9 +453,7 @@ void runMonitor(void *name)
       Serial.printf("### Max stack usage: %d\n", uxTaskGetStackHighWaterMark(NULL));
       #endif
 
-      seconds_elapsed++;
-
-      if(seconds_elapsed % (saveIntervals[currentIntervalIndex]) == 0){
+      if(seconds_elapsed > (15*60)){
         saveStat();
         seconds_elapsed = 0;
         if(currentIntervalIndex < saveIntervalsSize - 1)
